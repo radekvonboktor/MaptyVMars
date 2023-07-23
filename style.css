@@ -193,7 +193,7 @@ a:visited {
 }
 
 .clear-data__btn {
-    display: inline-block;
+    display: none;
     width: 100%;
     outline: 0;
     cursor: pointer;

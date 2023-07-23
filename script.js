@@ -1,4 +1,4 @@
-'use strict';
+// 'use strict';
 
 class Workout {
     date = new Date();
@@ -65,6 +65,14 @@ const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
 const clearDataBtn = document.querySelector('.clear-data__btn');
+
+//TODO:
+// Add sorting of workouts (by distance, by duration, etc)
+// Rebuild the Running and Cycling objects, when they are returned from Local Storage
+// Show all workouts in the map window
+// Draw travel lines for workouts
+// Geocoding the location
+// Displaying the Weather data
 
 class App {
     #map;
@@ -185,6 +193,7 @@ class App {
     }
 
     _renderWorkout(workout) {
+
         let html = `
             <li class="workout workout--${workout.type}" data-id="${workout.id}">
                 <button class="workout-delete__btn">
@@ -236,6 +245,8 @@ class App {
 
         form.insertAdjacentHTML('afterend', html);
 
+        clearDataBtn.style.display = 'inline-block';
+
         const clearWorkOutBtn = document.querySelector('.workout-delete__btn');
         clearWorkOutBtn.addEventListener('click', this._deleteWorkout.bind(this));
     };
@@ -246,10 +257,7 @@ class App {
         if (!workoutEl) return;
 
         const workout = this.#workouts.find(work => work.id === workoutEl.dataset.id);
-
-        this.#map.setView(workout.coords, this.#mapZoomLevel, { animate: true, pan: { duration: 2 } });
-
-        // workout.viewCounter();
+        if (workout?.coords) this.#map.setView(workout.coords, this.#mapZoomLevel, { animate: true, pan: { duration: 2 } });
     }
 
     _addToLocalStorage() {
@@ -279,13 +287,14 @@ class App {
         let data = JSON.parse(localStorage.getItem('workouts'));
 
         if (!workoutEl) return;
+        if (!data) return;
 
         const workoutToDelete = this.#workouts.find(workout => workout.id === workoutEl.dataset.id);
         const updatedWorkouts = data.filter(workout => workout.id != workoutToDelete.id);
 
         this.#workouts = updatedWorkouts;
-        data = localStorage.setItem('workouts', JSON.stringify(updatedWorkouts));
-        this.#workouts.forEach(workout => this._renderWorkout(workout));
+        localStorage.setItem('workouts', JSON.stringify(updatedWorkouts));
+        location.reload();
     }
 }
 
